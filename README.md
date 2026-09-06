@@ -1,18 +1,18 @@
-# imgdiff
+# ocidiff
 
 **Diff two Docker images without pulling them.**
 
-`imgdiff` compares two images straight from the registry and reports what
+`ocidiff` compares two images straight from the registry and reports what
 changed between them in: size, layer count, environment variables, and
-installed Debian packages. fetching from the Docker Hub API directly, so it needs
+installed Debian packages. It reads the Docker Hub API directly, so it needs
 neither a Docker daemon nor a full `docker pull`.
 
 ```console
-$ python cli.py nginx:1.26.0 nginx:1.27.0
+$ ocidiff nginx:1.26.0 nginx:1.27.0
 
 ╭──────────────────────────────────────────────╮
-│ A  library/nginx:1.26.0    67.7 MB  7 layers │
-│ B  library/nginx:1.27.0    67.7 MB  7 layers │
+│ A  library/nginx:1.26.0   67.7 MiB  7 layers │
+│ B  library/nginx:1.27.0   67.7 MiB  7 layers │
 │                          same size           │
 │                                              │
 │ + added   - removed   ~ changed              │
@@ -43,16 +43,15 @@ These two releases weigh the same, yet `openssl` moved from 3.0.11 to 3.0.13.
 ## Installation
 
 ```bash
-git clone <repository-url> imgdiff
-cd imgdiff
-python -m venv .venv
-.venv/bin/pip install httpx rich
+pipx install ocidiff
 ```
+
+Dependencies are installed for you.
 
 ## Usage
 
 ```bash
-python cli.py IMAGE_A IMAGE_B [--fast]
+ocidiff IMAGE_A IMAGE_B [--fast]
 ```
 
 |       Argument       |                     Description                     |
@@ -64,13 +63,13 @@ python cli.py IMAGE_A IMAGE_B [--fast]
 
 ```bash
 # Two tags of the same image
-python cli.py nginx:1.26.0 nginx:1.27.0
+ocidiff nginx:1.26.0 nginx:1.27.0
 
 # Size and environment only, no layer downloads
-python cli.py python:3.12 python:3.13 --fast
+ocidiff python:3.12 python:3.13 --fast
 
 # Across repositories
-python cli.py bitnami/nginx:latest nginx:latest
+ocidiff bitnami/nginx:latest nginx:latest
 ```
 
 Names follow Docker conventions: an unqualified name resolves to the official
@@ -82,7 +81,7 @@ Exit status is `0` on success and `1` when the image cannot be resolved.
 
 1. Requests a pull-scoped token from `auth.docker.io`.
 2. A tag usually points at a manifest list covering several architectures;
-   `imgdiff` selects the `linux/amd64` entry.
+   `ocidiff` selects the `linux/amd64` entry.
 3. Environment variables come from the image config blob.
 4. Layers are scanned newest-first for `/var/lib/dpkg/status`, 
    since the topmost copy is the effective one. Each

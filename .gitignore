@@ -1,13 +1,10 @@
-# ambiente virtual (recriado com pip install -r requirements.txt)
 .venv/
 venv/
-
-# caches do Python
 __pycache__/
 *.py[cod]
 .pytest_cache/
-
-# sistema / editor
-.DS_Store
 .vscode/
 .idea/
+dist/
+*.egg-info/
+.ruff_cache/
